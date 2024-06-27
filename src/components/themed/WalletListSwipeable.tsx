@@ -107,15 +107,17 @@ function WalletListSwipeableComponent(props: Props) {
 
     const disableAnimation = index >= MAX_LIST_ITEMS_ANIM
     if (wallet != null) {
+      const enter = disableAnimation ? undefined : ({ type: 'fadeInDown', distance: 20 * (index + 1) } as const)
       return (
-        <EdgeAnim disableAnimation={disableAnimation} enter={{ type: 'fadeInDown', distance: 20 * (index + 1) }}>
+        <EdgeAnim disableAnimation={disableAnimation} enter={enter}>
           <WalletListSwipeableCurrencyRow navigation={navigation} token={token} tokenId={tokenId} wallet={wallet} />
         </EdgeAnim>
       )
     }
     if (walletId != null) {
+      const enter = disableAnimation ? undefined : ({ type: 'fadeInDown', distance: 20 * (index + 1) } as const)
       return (
-        <EdgeAnim disableAnimation={disableAnimation} enter={{ type: 'fadeInDown', distance: 20 * (index + 1) }}>
+        <EdgeAnim disableAnimation={disableAnimation} enter={enter}>
           <WalletListSwipeableLoadingRow navigation={navigation} walletId={walletId} />
         </EdgeAnim>
       )
