@@ -16,9 +16,9 @@ import { debugLog, LOG_COINRANK } from '../../util/logger'
 import { fetchRates } from '../../util/network'
 import { makePeriodicTask } from '../../util/PeriodicTask'
 import { DECIMAL_PRECISION } from '../../util/utils'
+import { EdgeRow } from '../rows/EdgeRow'
 import { cacheStyles, Theme, useTheme } from '../services/ThemeContext'
 import { EdgeText } from '../themed/EdgeText'
-import { RowUi4 } from '../ui4/RowUi4'
 import { EdgeCard } from './EdgeCard'
 
 const LISTINGS_REFRESH_INTERVAL = 30000
@@ -86,7 +86,7 @@ const CoinRow = (props: CoinRowProps) => {
   }, [assetId, imageUrl])
 
   return (
-    <RowUi4
+    <EdgeRow
       key={key}
       icon={<FastImage style={styles.icon} source={imageSrc} />}
       onPress={() => navigation.navigate('coinRankingDetails', { coinRankingData: coinRow })}
@@ -99,7 +99,7 @@ const CoinRow = (props: CoinRowProps) => {
           <EdgeText style={percentStyle}>{percentString}</EdgeText>
         </View>
       </View>
-    </RowUi4>
+    </EdgeRow>
   )
 }
 

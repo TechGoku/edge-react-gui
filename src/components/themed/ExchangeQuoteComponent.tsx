@@ -12,7 +12,7 @@ import { useSelector } from '../../types/reactRedux'
 import { fixSides, mapSides, sidesToMargin } from '../../util/sides'
 import { DECIMAL_PRECISION, removeIsoPrefix } from '../../util/utils'
 import { EdgeCard } from '../cards/EdgeCard'
-import { CurrencyRow } from '../data/row/CurrencyRow'
+import { CurrencyRow } from '../rows/CurrencyRow'
 import { cacheStyles, Theme, useTheme } from '../services/ThemeContext'
 import { EdgeText } from './EdgeText'
 
