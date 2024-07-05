@@ -18,8 +18,8 @@ import { makePeriodicTask } from '../../util/PeriodicTask'
 import { DECIMAL_PRECISION } from '../../util/utils'
 import { cacheStyles, Theme, useTheme } from '../services/ThemeContext'
 import { EdgeText } from '../themed/EdgeText'
-import { CardUi4 } from './CardUi4'
-import { RowUi4 } from './RowUi4'
+import { RowUi4 } from '../ui4/RowUi4'
+import { EdgeCard } from './EdgeCard'
 
 const LISTINGS_REFRESH_INTERVAL = 30000
 
@@ -149,11 +149,11 @@ export const MarketsCardUi4 = (props: Props) => {
   }, [defaultIsoFiat, numRows])
 
   return (
-    <CardUi4 sections>
+    <EdgeCard sections>
       {coinRankingDatas.map((coinRow, index) => (
         <CoinRow key={coinRow.assetId} coinRow={coinRow} index={index} {...props} />
       ))}
-    </CardUi4>
+    </EdgeCard>
   )
 }
 
