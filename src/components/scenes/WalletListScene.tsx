@@ -7,6 +7,7 @@ import { lstrings } from '../../locales/strings'
 import { FooterRender, useSceneFooterState } from '../../state/SceneFooterState'
 import { useDispatch, useSelector } from '../../types/reactRedux'
 import { EdgeSceneProps } from '../../types/routerTypes'
+import { EdgeButton } from '../buttons/EdgeButton'
 import { CrossFade } from '../common/CrossFade'
 import { SceneWrapper } from '../common/SceneWrapper'
 import { SortOption, WalletListSortModal } from '../modals/WalletListSortModal'
@@ -18,7 +19,6 @@ import { SearchFooter } from '../themed/SearchFooter'
 import { WalletListHeader } from '../themed/WalletListHeader'
 import { WalletListSortable } from '../themed/WalletListSortable'
 import { WalletListSwipeable } from '../themed/WalletListSwipeable'
-import { ButtonUi4 } from '../ui4/ButtonUi4'
 
 interface Props extends EdgeSceneProps<'walletList'> {}
 
@@ -99,7 +99,7 @@ export function WalletListScene(props: Props) {
       return sorting ? (
         <SceneFooterWrapper key={key} noBackgroundBlur sceneWrapperInfo={sceneWrapperInfo} onLayoutHeight={handleFooterLayoutHeight}>
           <View style={styles.sortFooterContainer}>
-            <ButtonUi4 key="doneButton" mini type="primary" label={lstrings.string_done_cap} onPress={handlePressDone} />
+            <EdgeButton key="doneButton" mini type="primary" label={lstrings.string_done_cap} onPress={handlePressDone} />
           </View>
         </SceneFooterWrapper>
       ) : (
