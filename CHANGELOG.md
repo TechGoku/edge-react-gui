@@ -17,6 +17,12 @@
 - changed: Replaced 'react-native-camera' with 'react-native-vision-camera'
 - changed: WalletConnect: Move initial wallet selection to connections list scene
 - changed: Disable Sentry automatic breadcrumbs
+- changed: Ui4 components renamed and reorganized
+- changed: SendScene "Fee:" renamed to "Network Fee:"
+- changed: Style of "Already have an account? Sign in" tappable text
+- changed: EdgeRow shrinks content by default
+- fixed: Android keyboard enter key to support newlines in multiline text inputs
+- fixed: Broken link in "Help Closing App"
 - fixed: Fix for negative total balance due to small numbers and scientific notation
 - fixed: Stabilize the account sync bar progress motion.
 - fixed: Update Algorand's WalletConnectv2 reference
