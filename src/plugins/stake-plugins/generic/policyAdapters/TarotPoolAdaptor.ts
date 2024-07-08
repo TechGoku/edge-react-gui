@@ -569,7 +569,7 @@ export const makeTarotPoolAdapter = (policyConfig: StakePolicyConfig<TarotPoolAd
         canClaim: false
       }
     },
-    fetchYieldInfo: async () => {
+    fetchYieldInfo: () => {
       return {
         apy: undefined,
         yieldType: undefined

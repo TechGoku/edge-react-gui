@@ -3,6 +3,7 @@
 ## Unreleased
 
 - added: 0x Gasless Swap exchange plugin
+- change: Update generic stake plugins to use info server rollup for APY values
 
 ## 4.9.0
 

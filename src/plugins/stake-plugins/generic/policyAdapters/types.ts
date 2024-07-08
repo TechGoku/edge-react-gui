@@ -15,5 +15,5 @@ export interface StakePolicyAdapter {
   fetchClaimQuote: (wallet: EdgeCurrencyWallet, requestAssetId: AssetId, nativeAmount: string) => Promise<ChangeQuote>
   fetchUnstakeExactQuote: (wallet: EdgeCurrencyWallet, requestAssetId: AssetId, nativeAmount: string) => Promise<ChangeQuote>
   fetchStakePosition: (wallet: EdgeCurrencyWallet) => Promise<StakePosition>
-  fetchYieldInfo: () => Promise<Pick<StakePolicy, 'apy' | 'yieldType'>>
+  fetchYieldInfo: () => Pick<StakePolicy, 'apy' | 'yieldType'>
 }
