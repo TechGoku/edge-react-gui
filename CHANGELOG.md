@@ -3,6 +3,7 @@
 ## Unreleased
 
 - added: 0x Gasless Swap exchange plugin
+- changed: Show common chain icon as primary for L2 chains
 
 ## 4.9.0
 
