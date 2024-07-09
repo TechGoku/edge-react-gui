@@ -64,7 +64,7 @@ export function SweepPrivateKeyProcessingScene(props: Props) {
     const sweepPrivateKeyList: SweepPrivateKeyItem[] = [{ key: 'null', displayName: displayName, pluginId, tokenId: null }]
     for (const [tokenId, bal] of memoryWallet.balanceMap.entries()) {
       if (zeroString(bal) || tokenId == null) continue
-      sweepPrivateKeyList.push({ key: tokenId, displayName: allTokens[tokenId].displayName, pluginId, tokenId })
+      sweepPrivateKeyList.unshift({ key: tokenId, displayName: allTokens[tokenId].displayName, pluginId, tokenId })
     }
 
     if (sweepPrivateKeyList.length > 1) {

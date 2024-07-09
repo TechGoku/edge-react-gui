@@ -1,5 +1,5 @@
-import { add, sub } from 'biggystring'
-import { EdgeCurrencyWallet, EdgeMemoryWallet, EdgeSpendInfo, EdgeTransaction } from 'edge-core-js'
+import { add } from 'biggystring'
+import { EdgeCurrencyWallet, EdgeMemoryWallet, EdgeTokenId, EdgeTransaction } from 'edge-core-js'
 import * as React from 'react'
 import { ActivityIndicator, ListRenderItemInfo, View } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
@@ -17,132 +17,87 @@ import { cacheStyles, Theme, useTheme } from '../services/ThemeContext'
 import { CreateWalletSelectCryptoRow } from '../themed/CreateWalletSelectCryptoRow'
 import { MainButton } from '../themed/MainButton'
 import { SceneHeader } from '../themed/SceneHeader'
-import { SweepPrivateKeyItem } from './SweepPrivateKeyProcessingScene'
 
 export interface SweepPrivateKeyCompletionParams {
   memoryWallet: EdgeMemoryWallet
   receivingWallet: EdgeCurrencyWallet
-  sweepPrivateKeyList: SweepPrivateKeyItem[]
+  unsignedEdgeTransactions: EdgeTransaction[]
 }
 
 interface Props extends EdgeSceneProps<'sweepPrivateKeyCompletion'> {}
 
-interface SweepPrivateKeyTokenItem extends SweepPrivateKeyItem {
-  tokenId: string
-}
-
 const SweepPrivateKeyCompletionComponent = (props: Props) => {
   const { navigation, route } = props
-  const { memoryWallet, receivingWallet, sweepPrivateKeyList } = route.params
+  const { memoryWallet, receivingWallet, unsignedEdgeTransactions } = route.params
 
   const theme = useTheme()
   const styles = getStyles(theme)
-
-  const sortedSweepPrivateKeyList = React.useMemo(() => {
-    const sortedSweepPrivateKeyList: SweepPrivateKeyItem[] = []
-    const mainnetItemIndex = sweepPrivateKeyList.findIndex(item => item.tokenId == null)
-    for (const [i, item] of sweepPrivateKeyList.entries()) {
-      if (i === mainnetItemIndex) {
-        sortedSweepPrivateKeyList.push(item)
-      } else {
-        sortedSweepPrivateKeyList.unshift(item)
-      }
-    }
-    return sortedSweepPrivateKeyList
-  }, [sweepPrivateKeyList])
 
   const [done, setDone] = React.useState(false)
 
   // State to manage row status icons
   const [itemStatus, setItemStatus] = React.useState(() => {
-    return sortedSweepPrivateKeyList.reduce((map: { [key: string]: 'pending' | 'complete' | 'error' }, item) => {
-      map[item.key] = 'pending'
-      return map
-    }, {})
+    const itemStatusMap = new Map<EdgeTokenId, 'pending' | 'complete' | 'error'>()
+    for (const spendInfo of unsignedEdgeTransactions) {
+      itemStatusMap.set(spendInfo.tokenId, 'pending')
+    }
+    return itemStatusMap
   })
 
-  const flatListRef = React.useRef<FlatList<SweepPrivateKeyItem>>(null)
+  const flatListRef = React.useRef<FlatList<EdgeTransaction>>(null)
 
-  const handleItemStatus = (item: SweepPrivateKeyItem, status: 'complete' | 'error') => {
-    setItemStatus(currentState => ({ ...currentState, [item.key]: status }))
-    const index = sortedSweepPrivateKeyList.findIndex(asset => asset.key === item.key)
+  const handleTxStatus = (tx: EdgeTransaction, status: 'complete' | 'error') => {
+    setItemStatus(currentState => {
+      const newState = new Map(currentState)
+      newState.set(tx.tokenId, status)
+      return newState
+    })
+    const index = unsignedEdgeTransactions.findIndex(asset => asset.tokenId === tx.tokenId)
     flatListRef.current?.scrollToIndex({ animated: true, index, viewPosition: 0.5 })
   }
 
   // Sweep the funds and enable the tokens
   useAsyncEffect(
     async () => {
-      const mainnetItem = sortedSweepPrivateKeyList[sortedSweepPrivateKeyList.length - 1]
+      const mainnetTransaction = unsignedEdgeTransactions[unsignedEdgeTransactions.length - 1]
+      const tokenTransactions = unsignedEdgeTransactions.filter(tx => tx.tokenId != null)
 
-      const sweepPrivateKeyPromise = async () => {
-        const addressInfo = await receivingWallet.getReceiveAddress({ tokenId: null })
-        const publicAddress = addressInfo.segwitAddress ?? addressInfo.publicAddress
-
-        const tokenItems = sortedSweepPrivateKeyList.filter((pair: any): pair is SweepPrivateKeyTokenItem => pair.tokenId != null)
-
-        // Enable tokens on receiving wallet
-        const tokenIdsToEnable = [...new Set([...receivingWallet.enabledTokenIds, ...tokenItems.map(pair => pair.tokenId)])]
-        await receivingWallet.changeEnabledTokenIds(tokenIdsToEnable)
-
-        // Send tokens
-        let feeTotal = '0'
-        let hasError = false
-        const successfullyTransferredTokenIds: string[] = []
-        const pendingTxs: EdgeTransaction[] = []
-        for (const item of tokenItems) {
-          let tokenSpendInfo: EdgeSpendInfo = {
-            tokenId: item.tokenId,
-            spendTargets: [{ publicAddress }],
-            networkFeeOption: 'standard',
-            pendingTxs
-          }
-          try {
-            const maxAmount = await memoryWallet.getMaxSpendable(tokenSpendInfo)
-            tokenSpendInfo = { ...tokenSpendInfo, spendTargets: [{ ...tokenSpendInfo.spendTargets[0], nativeAmount: maxAmount }] }
-            const tx = await makeSpendSignAndBroadcast(memoryWallet, tokenSpendInfo)
-            successfullyTransferredTokenIds.push(item.tokenId)
-            pendingTxs.push(tx)
-            const txFee = tx.parentNetworkFee ?? tx.networkFee
-            feeTotal = add(feeTotal, txFee)
-
-            handleItemStatus(item, 'complete')
-          } catch (e: any) {
-            handleItemStatus(item, 'error')
-            hasError = true
-          }
+      // Send tokens
+      let feeTotal = '0'
+      let hasError = false
+      const successfullyTransferredTokenIds: EdgeTokenId[] = []
+      for (const unsignedTx of tokenTransactions) {
+        try {
+          const tx = await signBroadcastAndSave(memoryWallet, unsignedTx)
+          successfullyTransferredTokenIds.push(tx.tokenId)
+          const txFee = tx.parentNetworkFee ?? tx.networkFee
+          feeTotal = add(feeTotal, txFee)
+          handleTxStatus(tx, 'complete')
+        } catch (e: any) {
+          handleTxStatus(unsignedTx, 'error')
+          hasError = true
         }
-
-        if (!hasError) {
-          // Send mainnet
-          let spendInfo: EdgeSpendInfo = {
-            tokenId: null,
-            spendTargets: [{ publicAddress }],
-            networkFeeOption: 'standard',
-            pendingTxs
-          }
-          try {
-            const maxAmount = await memoryWallet.getMaxSpendable(spendInfo)
-            spendInfo = { ...spendInfo, spendTargets: [{ ...spendInfo.spendTargets[0], nativeAmount: maxAmount }] }
-            const amountToSend = sub(maxAmount, feeTotal)
-            spendInfo = { ...spendInfo, spendTargets: [{ ...spendInfo.spendTargets[0], nativeAmount: amountToSend }] }
-            await makeSpendSignAndBroadcast(memoryWallet, spendInfo)
-            handleItemStatus(mainnetItem, 'complete')
-          } catch (e) {
-            showError(e)
-            handleItemStatus(mainnetItem, 'error')
-          }
-        } else {
-          handleItemStatus(mainnetItem, 'error')
-        }
-
-        const tokenIdList = new Set(receivingWallet.enabledTokenIds)
-        for (const tokenId of successfullyTransferredTokenIds) {
-          tokenIdList.add(tokenId)
-        }
-        await receivingWallet.changeEnabledTokenIds([...tokenIdList])
       }
 
-      await sweepPrivateKeyPromise()
+      if (!hasError) {
+        // Send mainnet
+        try {
+          const tx = await signBroadcastAndSave(memoryWallet, mainnetTransaction)
+          handleTxStatus(tx, 'complete')
+        } catch (e) {
+          showError(e)
+          handleTxStatus(mainnetTransaction, 'error')
+        }
+      } else {
+        handleTxStatus(mainnetTransaction, 'error')
+      }
+
+      const tokenIdList = new Set(receivingWallet.enabledTokenIds)
+      for (const tokenId of successfullyTransferredTokenIds) {
+        if (tokenId == null) continue
+        tokenIdList.add(tokenId)
+      }
+      await receivingWallet.changeEnabledTokenIds([...tokenIdList])
 
       setDone(true)
       await memoryWallet.close()
@@ -152,19 +107,24 @@ const SweepPrivateKeyCompletionComponent = (props: Props) => {
     'SweepPrivateKeyCompletionComponent'
   )
 
-  const renderStatus = useHandler((item: SweepPrivateKeyItem) => {
+  const renderStatus = useHandler((spendInfo: EdgeTransaction) => {
     let icon = <ActivityIndicator style={{ paddingRight: theme.rem(0.3125) }} color={theme.iconTappable} />
-    if (itemStatus[item.key] === 'complete') icon = <IonIcon name="checkmark-circle-outline" size={theme.rem(1.5)} color={theme.iconTappable} />
-    if (itemStatus[item.key] === 'error')
+    if (itemStatus.get(spendInfo.tokenId) === 'complete') icon = <IonIcon name="checkmark-circle-outline" size={theme.rem(1.5)} color={theme.iconTappable} />
+    if (itemStatus.get(spendInfo.tokenId) === 'error')
       icon = <IonIcon name="warning-outline" style={{ paddingRight: theme.rem(0.0625) }} size={theme.rem(1.5)} color={theme.dangerText} />
     return icon
   })
 
-  const renderRow = useHandler((data: ListRenderItemInfo<SweepPrivateKeyItem>) => {
+  const renderRow = useHandler((data: ListRenderItemInfo<EdgeTransaction>) => {
     const { item } = data
 
     return (
-      <CreateWalletSelectCryptoRow pluginId={item.pluginId} tokenId={item.tokenId} walletName={getWalletName(receivingWallet)} rightSide={renderStatus(item)} />
+      <CreateWalletSelectCryptoRow
+        pluginId={receivingWallet.currencyInfo.pluginId}
+        tokenId={item.tokenId}
+        walletName={getWalletName(receivingWallet)}
+        rightSide={renderStatus(item)}
+      />
     )
   })
 
@@ -183,7 +143,7 @@ const SweepPrivateKeyCompletionComponent = (props: Props) => {
     )
   }, [done, navigation, styles.bottomButton])
 
-  const keyExtractor = useHandler((item: SweepPrivateKeyItem) => item.key)
+  const keyExtractor = useHandler((spendInfo: EdgeTransaction) => spendInfo.tokenId ?? '')
 
   return (
     <SceneWrapper>
@@ -192,7 +152,7 @@ const SweepPrivateKeyCompletionComponent = (props: Props) => {
           <SceneHeader title={lstrings.drawer_sweep_private_key} withTopMargin />
           <FlatList
             automaticallyAdjustContentInsets={false}
-            data={sortedSweepPrivateKeyList}
+            data={unsignedEdgeTransactions}
             contentContainerStyle={{ ...insetStyle, paddingTop: 0, paddingBottom: insetStyle.paddingBottom + theme.rem(5), marginHorizontal: theme.rem(0.5) }}
             extraData={itemStatus}
             fadingEdgeLength={10}
@@ -217,9 +177,8 @@ const getStyles = cacheStyles((theme: Theme) => ({
   }
 }))
 
-const makeSpendSignAndBroadcast = async (wallet: EdgeMemoryWallet, spendInfo: EdgeSpendInfo): Promise<EdgeTransaction> => {
-  const edgeUnsignedTransaction = await wallet.makeSpend(spendInfo)
-  const edgeSignedTransaction = await wallet.signTx(edgeUnsignedTransaction)
+const signBroadcastAndSave = async (wallet: EdgeMemoryWallet, unsignedSignedTransaction: EdgeTransaction): Promise<EdgeTransaction> => {
+  const edgeSignedTransaction = await wallet.signTx(unsignedSignedTransaction)
   const edgeBroadcastedTransaction = await wallet.broadcastTx(edgeSignedTransaction)
   await wallet.saveTx(edgeBroadcastedTransaction)
   return edgeBroadcastedTransaction
