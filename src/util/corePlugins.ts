@@ -67,7 +67,8 @@ export const currencyPlugins: EdgeCorePluginsInit = {
   vertcoin: true,
   zcoin: true,
   // edge-currency-monero:
-  monero: ENV.MONERO_INIT,
+  // monero: ENV.MONERO_INIT,
+  monero :true,
   piratechain: true,
   zcash: true
 }
