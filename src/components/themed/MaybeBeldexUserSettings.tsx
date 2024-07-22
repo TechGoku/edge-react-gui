@@ -11,25 +11,25 @@ import { SettingsHeaderRow } from '../settings/SettingsHeaderRow'
 import { SettingsRadioRow } from '../settings/SettingsRadioRow'
 import { SettingsSubHeader } from '../settings/SettingsSubHeader'
 
-const asMoneroUserSettings = asObject({
+const asBeldexUserSettings = asObject({
   enableCustomServers: asBoolean,
-  moneroLightwalletServer: asString
+  beldexLightwalletServer: asString
 })
-type MoneroUserSettings = ReturnType<typeof asMoneroUserSettings>
+type BeldexUserSettings = ReturnType<typeof asBeldexUserSettings>
 
-type Props = CurrencySettingProps<MoneroUserSettings, undefined>
+type Props = CurrencySettingProps<BeldexUserSettings, undefined>
 
-function MoneroUserSettingsComponent(props: Props) {
+function BeldexUserSettingsComponent(props: Props) {
   const { defaultSetting, onUpdate, setting } = props
-  const { enableCustomServers, moneroLightwalletServer } = setting
-  const isEmpty = moneroLightwalletServer === '' || moneroLightwalletServer === defaultSetting.moneroLightwalletServer
+  const { enableCustomServers, beldexLightwalletServer } = setting
+  const isEmpty = beldexLightwalletServer === '' || beldexLightwalletServer === defaultSetting.beldexLightwalletServer
 
-  const handleMyMonero = useHandler(async (): Promise<void> => {
+  const handleMyBeldex = useHandler(async (): Promise<void> => {
     await onUpdate({
       enableCustomServers: false,
-      moneroLightwalletServer
+      beldexLightwalletServer
     })
-    logActivity(`Disable Monero Node`)
+    logActivity(`Disable Beldex Node`)
   })
 
   const handleCustomServer = useHandler(async (): Promise<void> => {
@@ -38,7 +38,7 @@ function MoneroUserSettingsComponent(props: Props) {
         autoCapitalize="none"
         autoCorrect={false}
         bridge={bridge}
-        initialValue={moneroLightwalletServer ?? ''}
+        initialValue={beldexLightwalletServer ?? ''}
         inputLabel={lstrings.settings_custom_node_url}
         title={lstrings.settings_edit_custom_node}
       />
@@ -47,21 +47,21 @@ function MoneroUserSettingsComponent(props: Props) {
 
     await onUpdate({
       enableCustomServers: true,
-      moneroLightwalletServer: server ?? moneroLightwalletServer
+      beldexLightwalletServer: server ?? beldexLightwalletServer
     })
-    logActivity(`Enable Monero Node: "${server ?? moneroLightwalletServer}"`)
+    logActivity(`Enable Beldex Node: "${server ?? beldexLightwalletServer}"`)
   })
 
-  const customLabel = lstrings.settings_monero_custom + (isEmpty ? '' : `:\n${moneroLightwalletServer}`)
+  const customLabel = lstrings.settings_beldex_custom + (isEmpty ? '' : `:\n${beldexLightwalletServer}`)
 
   return (
     <>
-      <SettingsHeaderRow label={lstrings.settings_monero} />
-      <SettingsSubHeader label={lstrings.settings_monero_info} />
-      <SettingsRadioRow label={lstrings.settings_monero_default} value={!enableCustomServers} onPress={handleMyMonero} />
+      <SettingsHeaderRow label={lstrings.settings_beldex} />
+      <SettingsSubHeader label={lstrings.settings_beldex_info} />
+      <SettingsRadioRow label={lstrings.settings_beldex_default} value={!enableCustomServers} onPress={handleMyBeldex} />
       <SettingsRadioRow label={customLabel} value={enableCustomServers} onPress={handleCustomServer} />
     </>
   )
 }
 
-export const MaybeMoneroUserSettings = maybeCurrencySetting(MoneroUserSettingsComponent, asMoneroUserSettings, undefined)
+export const MaybeBeldexUserSettings = maybeCurrencySetting(BeldexUserSettingsComponent, asBeldexUserSettings, undefined)

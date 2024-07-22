@@ -30,6 +30,6 @@ declare module 'csv-stringify/lib/browser/sync' {
   export default function stringify(input: any[], options?: any): string
 }
 
-declare module 'edge-currency-monero/lib/react-native-io'
+declare module 'edge-currency-beldex/lib/react-native-io'
 declare module 'react-native-smart-splash-screen'
 declare module 'rn-id-blurview'

@@ -448,10 +448,10 @@ const strings = {
   settings_custom_servers_title: 'Custom %s Servers',
   settings_blockbook: 'Blockbook',
   settings_electrum: 'Electrum',
-  settings_monero: 'Monero Server',
-  settings_monero_default: 'MyMonero',
-  settings_monero_custom: 'Custom Light Wallet Server',
-  settings_monero_info:
+  settings_beldex: 'Monero Server',
+  settings_beldex_default: 'MyMonero',
+  settings_beldex_custom: 'Custom Light Wallet Server',
+  settings_beldex_info:
     'Edge uses Monero light wallet servers provided by MyMonero. These servers hold the private view key, which they use to scan for transactions. For enhanced privacy, you can run your own Monero light wallet server.',
   settings_hours: 'Hour(s)',
   settings_minutes: 'Minute(s)',
@@ -549,7 +549,7 @@ const strings = {
   string_first_litecoin_wallet_name: 'My Litecoin',
   string_first_cardano_wallet_name: 'My Cardano',
   string_first_cardano_preprod_wallet_name: 'My Cardano Testnet',
-  string_first_monero_wallet_name: 'My Monero',
+  string_first_beldex_wallet_name: 'My Monero',
   string_first_qtum_wallet_name: 'My Qtum',
   string_first_ripple_wallet_name: 'My XRP',
   string_first_smartcash_wallet_name: 'My SmartCash',

@@ -70,7 +70,8 @@ export const currencyPlugins: EdgeCorePluginsInit = {
   vertcoin: true,
   zcoin: ENV.ZCOIN_INIT,
   // edge-currency-monero:
-  monero: ENV.MONERO_INIT
+  // monero: ENV.MONERO_INIT
+  beldex:true
 }
 
 export const swapPlugins = {

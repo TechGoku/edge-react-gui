@@ -106,7 +106,7 @@ export const WALLET_LIST_MENU: Array<{
     value: 'viewXPub'
   },
   {
-    pluginIds: ['monero', 'piratechain', 'zcash'],
+    pluginIds: ['beldex', 'piratechain', 'zcash'],
     label: lstrings.fragment_wallets_view_private_view_key,
     value: 'viewPrivateViewKey'
   },

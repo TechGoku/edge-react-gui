@@ -2,7 +2,7 @@ import { addBreadcrumb, captureException } from '@sentry/react-native'
 import detectBundler from 'detect-bundler'
 import { EdgeContext, EdgeContextOptions, EdgeCrashReporter, EdgeFakeWorld, EdgeNativeIo, MakeEdgeContext, MakeFakeEdgeWorld } from 'edge-core-js'
 import { debugUri as accountbasedDebugUri, makePluginIo as makeAccountbasedIo, pluginUri as accountbasedUri } from 'edge-currency-accountbased'
-import makeMoneroIo from 'edge-currency-monero/lib/react-native-io'
+import makeBeldexIo from 'edge-currency-beldex/lib/react-native-io'
 import { debugUri as currencyPluginsDebugUri, makePluginIo as makeCurrencyPluginsIo, pluginUri as currencyPluginsUri } from 'edge-currency-plugins'
 import { debugUri as exchangeDebugUri, pluginUri as exchangeUri } from 'edge-exchange-plugins'
 import * as React from 'react'
@@ -52,7 +52,7 @@ const nativeIo: EdgeNativeIo = detectBundler.isReactNative
           maxMemoryUsage: 50 * 1024 * 1024 // 50MB
         }
       }),
-      'edge-currency-monero': makeMoneroIo()
+      'edge-currency-beldex': makeBeldexIo()
     }
   : {}
 

@@ -12,7 +12,7 @@ import { cacheStyles, Theme, useTheme } from '../services/ThemeContext'
 import { SettingsHeaderRow } from '../settings/SettingsHeaderRow'
 import { SettingsRadioRow } from '../settings/SettingsRadioRow'
 import { MaybeBlockbookSetting, MaybeCustomServersSetting, MaybeElectrumSetting } from '../themed/MaybeCustomServersSetting'
-import { MaybeMoneroUserSettings } from '../themed/MaybeMoneroUserSettings'
+import { MaybeBeldexUserSettings } from '../themed/MaybeBeldexUserSettings'
 
 export interface CurrencySettingsParams {
   currencyInfo: EdgeCurrencyInfo
@@ -62,7 +62,7 @@ export function CurrencySettingsScene(props: Props) {
       <MaybeBlockbookSetting currencyConfig={currencyConfig} />
       <MaybeCustomServersSetting currencyConfig={currencyConfig} />
       <MaybeElectrumSetting currencyConfig={currencyConfig} />
-      <MaybeMoneroUserSettings currencyConfig={currencyConfig} />
+      <MaybeBeldexUserSettings currencyConfig={currencyConfig} />
     </SceneWrapper>
   )
 }

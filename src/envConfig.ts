@@ -220,7 +220,7 @@ export const asEnvConfig = asObject({
       apiKey: asOptional(asString, '')
     }).withRest
   ),
-  MONERO_INIT: asCorePluginInit(
+  BELDEX_INIT: asCorePluginInit(
     asObject({
       apiKey: asOptional(asString, '')
     }).withRest

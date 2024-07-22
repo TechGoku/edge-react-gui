@@ -40,7 +40,7 @@ export const CURRENCY_SETTINGS_KEYS = [
   'dash',
   'litecoin',
   'bitcoinsv',
-  'monero',
+  'beldex',
   'zcoin',
   'digibyte',
   'dogecoin',
@@ -62,7 +62,7 @@ export const CURRENCY_SETTINGS_KEYS = [
 export const WALLET_TYPE_ORDER = [
   'wallet:bitcoin',
   'wallet:bitcoincash',
-  'wallet:monero',
+  'wallet:beldex',
   'wallet:ethereum',
   'wallet:zcash',
   'wallet:zksync',
@@ -274,10 +274,10 @@ export const SPECIAL_CURRENCY_INFO: {
     tokenActivationAdditionalReserveText: lstrings.activate_wallet_token_scene_body_xrp_extra,
     isImportKeySupported: true
   },
-  monero: {
-    initWalletName: lstrings.string_first_monero_wallet_name,
+  beldex: {
+    initWalletName: lstrings.string_first_beldex_wallet_name,
     chainCode: 'XMR',
-    dummyPublicAddress: '46qxvuS78CNBoiiKmDjvjd5pMAZrTBbDNNHDoP52jKj9j5mk6m4R5nU6BDrWQURiWV9a2n5Sy8Qo4aJskKa92FX1GpZFiYA',
+    dummyPublicAddress: 'bxca1Lrb8QYMHgQrVDmfSENzS5uvApRk3Ni7x1bjJ1KxgNXwGw2amdpV64NcWUkHAJERZ8LTTZLesCoPHBu889VC21FFWqX47',
     isImportKeySupported: false
   },
   cardano: {
